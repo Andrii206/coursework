@@ -32,6 +32,15 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
+    Route::post('/chats/check', [ChatController::class, 'checkOrCreate'])->name('chats.check');
+    Route::get('/chats/{chat}', [ChatController::class, 'show'])->name('chats.show');
+    Route::post('/chats/{chat}/block', [ChatController::class, 'toggleBlock'])->name('chats.block');
+    Route::post('/chats/{chat}/messages', [MessageController::class, 'store'])->name('messages.store');
+});
+
+
 
 Route::prefix('admin')->middleware(['admin', 'auth'])->group(function () {
     
@@ -92,23 +101,4 @@ Route::prefix('admin')->middleware(['admin', 'auth'])->group(function () {
         Route::delete('/{author}', \App\Http\Controllers\Admin\Author\DeleteController::class)->name('author.delete');
     });
 });
-
-Route::middleware(['auth'])->group(function () {
-    
-    Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
-    
-    
-    Route::post('/chats/check', [ChatController::class, 'checkOrCreate'])->name('chats.check');
-    
-    
-    Route::get('/chats/{chat}', [ChatController::class, 'show'])->name('chats.show');
-    
-    
-    Route::post('/chats/{chat}/block', [ChatController::class, 'toggleBlock'])->name('chats.block');
-
-    
-    Route::post('/chats/{chat}/messages', [MessageController::class, 'store'])->name('messages.store');
-});
-
-
 
