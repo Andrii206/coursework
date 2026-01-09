@@ -7,6 +7,7 @@ use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ChatController extends Controller
 {
@@ -26,7 +27,7 @@ class ChatController extends Controller
             }])
             ->get();
 
-        return view('chat.index', compact('chats'));
+        return Inertia::render('Chat/Index', compact('chats', 'userId'));
     }
 
     /**
@@ -35,29 +36,12 @@ class ChatController extends Controller
     public function show(Chat $chat)
     {
         $userId = Auth::id();
-
-        
-        
         abort_unless($chat->sender_id === $userId || $chat->recipient_id === $userId, 403);
-
-        
-        $messages = $chat->messages()
-            ->with('sender') 
-            ->oldest() 
-            ->get();
-
-        
-        
-        
-        
+        $messages = $chat->messages()->with('sender')->oldest()->get();
         $interlocutor = ($chat->sender_id === $userId) ? $chat->recipient : $chat->sender;
 
-        return view('chat.show', compact('chat', 'messages', 'interlocutor'));
+        return Inertia::render('Chat/Show', compact('chat', 'messages', 'interlocutor', 'userId'));
     }
-
-    /**
-     * Створює або знаходить існуючий чат
-     */
     public function checkOrCreate(Request $request)
     {
         $currentUserId = Auth::id();
@@ -81,21 +65,13 @@ class ChatController extends Controller
         return redirect()->route('chats.show', $chat->id);
     }
 
-    /**
-     * Блокування / Розблокування чату
-     */
     public function toggleBlock(Chat $chat)
     {
         $userId = Auth::id();
-        
-        
         abort_unless($chat->sender_id === $userId || $chat->recipient_id === $userId, 403);
-
-        
         $chat->update([
             'blocked' => !$chat->blocked
         ]);
-
         $status = $chat->blocked ? 'заблоковано' : 'розблоковано';
         
         return back()->with('success', "Чат {$status}.");
