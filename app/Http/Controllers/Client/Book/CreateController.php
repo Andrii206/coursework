@@ -7,6 +7,7 @@ use App\Models\Author;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CreateController extends Controller
 {
@@ -16,6 +17,6 @@ class CreateController extends Controller
         $categories = Category::all();
         $authors = Author::all();
 
-        return view('client.create', compact('tags', 'categories', 'authors'));
+        return Inertia::render('Client/Create', ['categories' => $categories, 'authors' => $authors, 'tags' => $tags]);
     }
 }

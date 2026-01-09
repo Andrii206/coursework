@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
+use Inertia\Inertia;
 
 class ShowUserController extends Controller
 {
     public function __invoke(User $user)
     {
         $user->load(['books', 'reviewsReceived.sender']);
-        $averageRating = $user->reviewsReceived()->avg('rating');
+        $averageRating = number_format($user->reviewsReceived()->avg('rating'), 1);
         $pageCurrentUser = $user->id == Auth::id();
 
-        return view('show-user', compact('user', 'averageRating', 'pageCurrentUser'));
+        return Inertia::render('Show/User', compact('user', 'averageRating', 'pageCurrentUser'));
     }
 }
