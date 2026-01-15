@@ -76,9 +76,19 @@ class User extends Authenticatable
         return $this->hasMany(Review::class, 'sender_id', 'id');
     }
 
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'user_id', 'id');
+    }
+
     public function chats()
     {
         return Chat::where('sender_id', $this->id)
             ->orWhere('recipient_id', $this->id);
+    }
+
+    public function likedBooks()
+    {
+        return $this->belongsToMany(Book::class, 'likes', 'user_id', 'book_id');
     }
 }

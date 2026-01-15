@@ -3,14 +3,13 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import MainLayout from '@/Layouts/MainLayout.vue';
 
-// Отримуємо дані, які передаються з бекенду (Shared Data)
 const page = usePage();
 const user = computed(() => page.props.auth.user);
-const categories = computed(() => page.props.global?.categories || []); // Безпечний доступ
+const categories = computed(() => page.props.global?.categories || []);
 const authors = computed(() => page.props.global?.authors || []);
 const myBooks = computed(() => page.props.global?.myBooks || []);
+const likedBooks = computed(() => page.props.global?.likedBooks || []);
 
-// Функція для зображень
 const getImageUrl = (path) => path ? `/storage/${path}` : '/assets/no-image.png';
 </script>
 
@@ -60,7 +59,7 @@ const getImageUrl = (path) => path ? `/storage/${path}` : '/assets/no-image.png'
                                 </div>
                                 <div class="flex-grow-1">
                                     <h5 class="mb-1 fw-bold">
-                                        <Link :href="`/books/${book.id}`"
+                                        <Link :href="`/book/${book.id}`"
                                             class="text-dark text-decoration-none stretched-link-custom">
                                             {{ book.title }}
                                         </Link>
@@ -93,6 +92,58 @@ const getImageUrl = (path) => path ? `/storage/${path}` : '/assets/no-image.png'
                         </li>
                     </ul>
                     <Link href="/books/create" class="w-100 btn btn-primary btn-lg">Place an ad</Link>
+                </div>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasLikes"
+            aria-labelledby="My Likes">
+            <div class="offcanvas-header justify-content-center">
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="order-md-last">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-primary">Улюблені</span>
+                        <span class="badge bg-primary rounded-pill">{{ likedBooks.length }}</span>
+                    </h4>
+
+                    <ul class="list-group mb-3">
+                        <li v-for="book in likedBooks" :key="book.id"
+                            class="list-group-item border-0 shadow-sm rounded-3 mb-3 p-3 book-item-hover">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-4">
+                                    <div class="position-relative" style="width: 80px; height: 110px;">
+                                        <img :src="getImageUrl(book.preview_image)" :alt="book.title"
+                                            class="w-100 h-100 rounded shadow-sm" style="object-fit: cover;">
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1 fw-bold">
+                                        <Link :href="`/book/${book.id}`"
+                                            class="text-dark text-decoration-none stretched-link-custom">
+                                            {{ book.title }}
+                                        </Link>
+                                    </h5>
+                                    <div class="text-muted small mb-2">
+                                        <i class="bi bi-person-circle me-1"></i> {{ book.author?.name }}
+                                    </div>
+                                </div>
+
+                                <div class="flex-shrink-0 ms-3">
+                                    <div class="d-flex flex-column gap-2">
+                                        <button class="btn btn-light btn-sm shadow-sm" title="Видалити зі списку"
+                                            @click="removeFromLikes(book.id)">
+                                            <i class="bi bi-heart-break-fill text-danger"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div v-if="likedBooks.length === 0" class="text-center text-muted mt-5">
+                        Список порожній
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,8 +216,10 @@ const getImageUrl = (path) => path ? `/storage/${path}` : '/assets/no-image.png'
                             </li>
                             <li class="">
                                 <a href="#" class="rounded-circle bg-light p-2 mx-1" data-bs-toggle="offcanvas"
-                                    data-bs-target="#offcanvasCart">
-                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    data-bs-target="#offcanvasLikes" aria-controls="offcanvasLikes">
+
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
                                         </g>
@@ -174,14 +227,16 @@ const getImageUrl = (path) => path ? `/storage/${path}` : '/assets/no-image.png'
                                             <path
                                                 d="M15.7 4C18.87 4 21 6.98 21 9.76C21 15.39 12.16 20 12 20C11.84 20 3 15.39 3 9.76C3 6.98 5.13 4 8.3 4C10.12 4 11.31 4.91 12 5.71C12.69 4.91 13.88 4 15.7 4Z"
                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round"></path>
+                                                stroke-linejoin="round">
+                                            </path>
                                         </g>
                                     </svg>
                                 </a>
                             </li>
                             <li class="">
                                 <Link href="/chats" class="rounded-circle bg-light p-2 mx-1">
-                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
                                         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
                                         </g>

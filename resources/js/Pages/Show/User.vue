@@ -122,7 +122,7 @@ const submit = () => {
                                                             <p class="card-text text-success fw-bold">
                                                                 {{ book.price ? book.price + ' ₴' : 'Безкоштовно' }}
                                                             </p>
-                                                            <Link :href="`/books/${book.id}`"
+                                                            <Link :href="`/book/${book.id}`"
                                                                 class="btn btn-sm btn-outline-primary stretched-link">
                                                                 Детальніше
                                                             </Link>

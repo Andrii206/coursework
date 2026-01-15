@@ -42,6 +42,10 @@ class HandleInertiaRequests extends Middleware
                 'categories' => Category::take(10)->get(), 
                 'authors' => Author::take(5)->get(),       
                 'myBooks' => $request->user() ? Book::where('user_id', $request->user()->id)->with('author') ->get() : [],
+                'likedBooks' => $request->user() ? $request->user()->likedBooks()->with('author')->get() : [],
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
             ],
         ];
     }

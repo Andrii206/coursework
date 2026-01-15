@@ -3,7 +3,6 @@
 use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\Chat\MessageController;
 use App\Http\Controllers\ChatController as ControllersChatController;
-use App\Http\Controllers\Client\Review\StoreController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ShowBookController;
 use App\Http\Controllers\ShowUserController;
@@ -19,9 +18,9 @@ Route::get('/book/{book}', ShowBookController::class)->name('main.book.show');
 Route::get('/users/{user}', ShowUserController::class)->name('main.users.show');
 
 Route::middleware(['auth'])->group(function () {
-
-    Route::post('/users/{user}/reviews', StoreController::class)->middleware('auth')->name('users.reviews.store');
-
+    Route::post('/likes/toggle', \App\Http\Controllers\Client\Like\StoreController::class)->name('likes.toggle');
+    Route::post('/users/{user}/reviews', \App\Http\Controllers\Client\Review\StoreController::class)->name('users.reviews.store');
+    Route::post('/books/{book}/like', action: \App\Http\Controllers\Client\Like\StoreController::class)->name('users.like.store');
     Route::group(['prefix'=>'books'], function(){
         Route::get('/create', \App\Http\Controllers\Client\Book\CreateController::class)->name('main.book.create');
         Route::post('/', \App\Http\Controllers\Client\Book\StoreController::class)->name('main.book.store');
